@@ -56,7 +56,7 @@ object BasicEvaluation extends Evaluation {
     }
     else {
       val inCheck = new CheckChecker(node).inCheck
-      val eval =
+      var eval =
         if(node.moves.isEmpty && inCheck) {
           checkmate
         }
@@ -68,6 +68,9 @@ object BasicEvaluation extends Evaluation {
             if (p.isDefined) score(p.get)
             else 0).sum
         }
+
+      eval += PawnEvaluation.evaluate(node)
+
       (eval * 100).round / 100.0 * node.active.toInt
     }
   }

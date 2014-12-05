@@ -64,7 +64,7 @@ object AlphaBetaGameTest extends App {
         while(move == null)
       }
       else {
-        val best = new AlphaBetaSearch(3).search(node)
+        val best = new AlphaBetaSearch(4).search(node)
         move = best._1
         println(s"$move is chosen [${best._2}].")
         println(node.verboseString)
