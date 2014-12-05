@@ -1,0 +1,5 @@
+7.286699s
+6.641741s   caching ray square iterators.
+6.513185s   node stores move list.
+6.020591s   node stores attacked squares.
+5.929348s   . . .

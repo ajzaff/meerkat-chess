@@ -1,0 +1,280 @@
+Human (w)hite or (b)lack?: b
+Human playing black
+8           q
+7     k
+6     n     p Q
+5         p
+4 R P     P
+3     P     R   P
+2     P   K     P
+1
+  A B C D E F G H
+black [-11.0] fullMove=1 halfMove=0 castle=- enPassant=-
+activeKing=Some(c7) inactiveKing=Some(e2)
+
+move (ex: a3c4): f8d8
+8       q
+7     k
+6     n     p Q
+5         p
+4 R P     P
+3     P     R   P
+2     P   K     P
+1
+  A B C D E F G H
+white [11.0] fullMove=2 halfMove=1 castle=- enPassant=-
+activeKing=Some(e2) inactiveKing=Some(c7)
+
+Ke1 is chosen [12.0].
+8       q
+7     k
+6     n     p Q
+5         p
+4 R P     P
+3     P     R   P
+2     P   K     P
+1
+  A B C D E F G H
+white [11.0] fullMove=2 halfMove=1 castle=- enPassant=-
+activeKing=Some(e2) inactiveKing=Some(c7)
+
+8       q
+7     k
+6     n     p Q
+5         p
+4 R P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+black [-11.0] fullMove=2 halfMove=2 castle=- enPassant=-
+activeKing=Some(c7) inactiveKing=Some(e1)
+
+move (ex: a3c4): c6e7
+8       q
+7     k   n
+6           p Q
+5         p
+4 R P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [11.0] fullMove=3 halfMove=3 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(c7)
+
+Qxf6 is chosen [12.0].
+8       q
+7     k   n
+6           p Q
+5         p
+4 R P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [11.0] fullMove=3 halfMove=3 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(c7)
+
+8       q
+7     k   n
+6           Q
+5         p
+4 R P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+black [-12.0] fullMove=3 halfMove=4 castle=- enPassant=-
+activeKing=Some(c7) inactiveKing=Some(e1)
+
+move (ex: a3c4): c7c8
+8     k q
+7         n
+6           Q
+5         p
+4 R P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [12.0] fullMove=4 halfMove=5 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(c8)
+
+Ra8 is chosen [17.0].
+8     k q
+7         n
+6           Q
+5         p
+4 R P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [12.0] fullMove=4 halfMove=5 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(c8)
+
+8 R   k q
+7         n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+black [-12.0] fullMove=4 halfMove=6 castle=- enPassant=-
+activeKing=Some(c8) inactiveKing=Some(e1)
+
+move (ex: a3c4): c8d7
+8 R     q
+7       k n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [12.0] fullMove=5 halfMove=7 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(d7)
+
+Rxd8 is chosen [17.0].
+8 R     q
+7       k n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [12.0] fullMove=5 halfMove=7 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(d7)
+
+8       R
+7       k n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+black [-21.0] fullMove=5 halfMove=8 castle=- enPassant=-
+activeKing=Some(d7) inactiveKing=Some(e1)
+
+move (ex: a3c4): d7d8
+8       k
+7         n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [16.0] fullMove=6 halfMove=9 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(d8)
+
+Kf2 is chosen [17.0].
+8       k
+7         n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P         P
+1         K
+  A B C D E F G H
+white [16.0] fullMove=6 halfMove=9 castle=- enPassant=-
+activeKing=Some(e1) inactiveKing=Some(d8)
+
+8       k
+7         n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P     K   P
+1
+  A B C D E F G H
+black [-16.0] fullMove=6 halfMove=10 castle=- enPassant=-
+activeKing=Some(d8) inactiveKing=Some(f2)
+
+move (ex: a3c4): d8c8
+8     k
+7         n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P     K   P
+1
+  A B C D E F G H
+white [16.0] fullMove=7 halfMove=11 castle=- enPassant=-
+activeKing=Some(f2) inactiveKing=Some(c8)
+
+Qxe7 is chosen [20.0].
+8     k
+7         n
+6           Q
+5         p
+4   P     P
+3     P     R   P
+2     P     K   P
+1
+  A B C D E F G H
+white [16.0] fullMove=7 halfMove=11 castle=- enPassant=-
+activeKing=Some(f2) inactiveKing=Some(c8)
+
+8     k
+7         Q
+6
+5         p
+4   P     P
+3     P     R   P
+2     P     K   P
+1
+  A B C D E F G H
+black [-19.0] fullMove=7 halfMove=12 castle=- enPassant=-
+activeKing=Some(c8) inactiveKing=Some(f2)
+
+move (ex: a3c4): c8b8
+8   k
+7         Q
+6
+5         p
+4   P     P
+3     P     R   P
+2     P     K   P
+1
+  A B C D E F G H
+white [19.0] fullMove=8 halfMove=13 castle=- enPassant=-
+activeKing=Some(f2) inactiveKing=Some(b8)
+
+Rf8 is chosen [1.7976931348623157E308].
+8   k
+7         Q
+6
+5         p
+4   P     P
+3     P     R   P
+2     P     K   P
+1
+  A B C D E F G H
+white [19.0] fullMove=8 halfMove=13 castle=- enPassant=-
+activeKing=Some(f2) inactiveKing=Some(b8)
+
+8   k       R
+7         Q
+6
+5         p
+4   P     P
+3     P         P
+2     P     K   P
+1
+  A B C D E F G H
+black [99.0] fullMove=8 halfMove=14 castle=- enPassant=-
+activeKing=Some(b8) inactiveKing=Some(f2)
+black has no moves.

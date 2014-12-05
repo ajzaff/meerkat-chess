@@ -1,0 +1,12 @@
+Ke1 is chosen [12.0].
+8       q
+7     k
+6     n     p Q
+5         p
+4 R P     P
+3     P     R   P
+2     P   K     P
+1
+  A B C D E F G H
+white [11.0] fullMove=2 halfMove=1 castle=- enPassant=-
+activeKing=Some(e2) inactiveKing=Some(c7)
