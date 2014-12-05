@@ -14,17 +14,15 @@ class AlphaBetaSearch(ply : Int) extends Search[BasicNode] {
    * @return a best move.
    */
   override def search(node: BasicNode): BestMove = {
-    val moves = node.moves
+    val moves = node.moves.sortBy(CaptureValue.comparator(_))
     if(node.active == White) {
       val ms = moves.map(m => (m,-alphaBeta(node.move(m), Double.MinValue, Double.MaxValue, ply-1)))
-      //println(ms.mkString("\n"))
+      println(ms.mkString("\n"))
       ms.maxBy(_._2)
     }
     else {
-      //val m = moves.find(_.toString=="Rxc6").get
-
       val ms = moves.map(m => (m,-alphaBeta(node.move(m), -Double.MaxValue, -Double.MinValue, ply-1)))
-      //println(ms.mkString("\n"))
+      println(ms.mkString("\n"))
       ms.maxBy(_._2)
     }
   }

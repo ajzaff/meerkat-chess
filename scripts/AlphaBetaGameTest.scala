@@ -36,7 +36,7 @@ object AlphaBetaGameTest extends App {
    * I think causes a bug in Quiescence.
    */
 
-  var node = FENParser.parse("5q2/2k5/2n2pQ1/4p3/RP2P3/2P2R1P/2P1K2P/8 b - - 0 1")//BasicNode.startingPosition//FENParser.parse("k1r2b2/p4p1p/N1Np1q2/2pQ2p1/1P2PP1r/P3B3/2P3PP/R4RK1 b - - 0 1")
+  var node = BasicNode.startingPosition//FENParser.parse("5q2/2k5/2n2pQ1/4p3/RP2P3/2P2R1P/2P1K2P/8 b - - 0 1")//BasicNode.startingPosition//FENParser.parse("k1r2b2/p4p1p/N1Np1q2/2pQ2p1/1P2PP1r/P3B3/2P3PP/R4RK1 b - - 0 1")
   var moves : List[Move] = Nil
   do {
     moves = new MoveGenerator(node).generateAll
@@ -64,7 +64,7 @@ object AlphaBetaGameTest extends App {
         while(move == null)
       }
       else {
-        val best = new AlphaBetaSearch(2).search(node)
+        val best = new AlphaBetaSearch(3).search(node)
         move = best._1
         println(s"$move is chosen [${best._2}].")
         println(node.verboseString)

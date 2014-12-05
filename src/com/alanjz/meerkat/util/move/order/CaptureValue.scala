@@ -7,17 +7,17 @@ import com.alanjz.meerkat.util.basicEval.BasicEvaluation
 object CaptureValue {
   def comparator(move : Move) : Double = move match {
     case m : PawnCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.pawnScore
+      5 + BasicEvaluation.pieceWeight(m.captured)
     case m : KnightCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.knightScore
+      3 + BasicEvaluation.pieceWeight(m.captured)
     case m : BishopCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.bishopScore
+      3 + BasicEvaluation.pieceWeight(m.captured)
     case m : RookCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.rookScore
+      2 + BasicEvaluation.pieceWeight(m.captured)
     case m : QueenCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.queenScore
+      1 + BasicEvaluation.pieceWeight(m.captured)
     case m : KingCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.kingScore
+      BasicEvaluation.pieceWeight(m.captured)
     case _ => 0
   }
 }
