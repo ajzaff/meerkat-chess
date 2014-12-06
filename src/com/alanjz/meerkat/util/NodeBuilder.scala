@@ -58,8 +58,11 @@ class NodeBuilder {
     val inactiveKing =
       if(square == node.inactiveKing.getOrElse(None)) None else node.inactiveKing
     node = new BasicNode(
-      node.pieces.updated(square.toInt, None), node.fullMove, node.halfMove,
-      node.active, node.castleRules, node.enPassant, activeKing, inactiveKing
+      node.pieces.updated(square.toInt, None),
+      node.fullMove, node.halfMove,
+      node.active, node.castleRules, node.enPassant,
+      activeKing, inactiveKing,
+      node.activeCastled, node.inactiveCastled
     )
   }
 
@@ -86,8 +89,11 @@ class NodeBuilder {
       case Black => if(piece.getOrElse(None) == King(White)) Some(square) else node.inactiveKing
     }
     node = new BasicNode(
-      node.pieces.updated(square.toInt, piece), node.fullMove, node.halfMove,
-      node.active, node.castleRules, node.enPassant, activeKing, inactiveKing
+      node.pieces.updated(square.toInt, piece),
+      node.fullMove, node.halfMove,
+      node.active, node.castleRules, node.enPassant,
+      activeKing, inactiveKing,
+      node.activeCastled, node.inactiveCastled
     )
   }
 
@@ -99,7 +105,9 @@ class NodeBuilder {
   def setCastling(castling : CastleRule) {
     node = new BasicNode(
       node.pieces, node.fullMove, node.halfMove,
-      node.active, castling, node.enPassant, node.activeKing, node.inactiveKing)
+      node.active, castling, node.enPassant,
+      node.activeKing, node.inactiveKing,
+      node.activeCastled, node.inactiveCastled)
   }
 
   /**
@@ -112,9 +120,15 @@ class NodeBuilder {
       if(color == node.active) node.activeKing else node.inactiveKing
     val inactiveKing =
       if(color == node.active) node.inactiveKing else node.activeKing
+    val activeCastled =
+      if(color == node.active) node.activeCastled else node.inactiveCastled
+    val inactiveCastled =
+      if(color == node.active) node.inactiveCastled else node.activeCastled
     node = new BasicNode(
       node.pieces, node.fullMove, node.halfMove,
-      color, node.castleRules, node.enPassant, activeKing, inactiveKing)
+      color, node.castleRules, node.enPassant,
+      activeKing, inactiveKing,
+      activeCastled, inactiveCastled)
   }
 
   /**
@@ -125,7 +139,9 @@ class NodeBuilder {
   def setFullMove(fullMove : Int): Unit = {
     node = new BasicNode(
       node.pieces, fullMove, node.halfMove,
-      node.active, node.castleRules, node.enPassant, node.activeKing, node.inactiveKing)
+      node.active, node.castleRules, node.enPassant,
+      node.activeKing, node.inactiveKing,
+      node.activeCastled, node.inactiveCastled)
   }
 
   /**
@@ -136,7 +152,9 @@ class NodeBuilder {
   def setHalfMove(halfMove : Int): Unit = {
     node = new BasicNode(
       node.pieces, node.fullMove, halfMove,
-      node.active, node.castleRules, node.enPassant, node.activeKing, node.inactiveKing)
+      node.active, node.castleRules, node.enPassant,
+      node.activeKing, node.inactiveKing,
+      node.activeCastled, node.inactiveCastled)
   }
 
   /**
@@ -147,7 +165,9 @@ class NodeBuilder {
   def setEnPassantSquare(square : Option[Square]): Unit = {
     node = new BasicNode(
       node.pieces, node.fullMove, node.halfMove,
-      node.active, node.castleRules, square, node.activeKing, node.inactiveKing)
+      node.active, node.castleRules, square,
+      node.activeKing, node.inactiveKing,
+      node.activeCastled, node.inactiveCastled)
   }
 
   /**

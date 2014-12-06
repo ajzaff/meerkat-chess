@@ -44,8 +44,6 @@ object AlphaBetaGameTest extends App {
     val ms = moves.mkString(",")
     if(!moves.isEmpty) {
       var move : Move = null
-      println(node.verboseString)
-      println
       if(node.active == human) {
         do {
           print("move (ex: a3c4): ")
@@ -62,15 +60,16 @@ object AlphaBetaGameTest extends App {
           }
         }
         while(move == null)
+        node = node.move(move)
       }
       else {
-        val best = new AlphaBetaSearch(4).search(node)
+        val best = new AlphaBetaSearch(3).search(node)
         move = best._1
         println(s"$move is chosen [${best._2}].")
+        node = node.move(move)
         println(node.verboseString)
         println
       }
-      node = node.move(move)
     }
     else {
       println(node.verboseString)

@@ -6,7 +6,7 @@ import com.alanjz.meerkat.pieces.Color._
 import com.alanjz.meerkat.pieces.Piece._
 import com.alanjz.meerkat.pieces.{Color, Piece}
 import com.alanjz.meerkat.util.NodeBuilder
-import com.alanjz.meerkat.util.basicEval.BasicEvaluation
+import com.alanjz.meerkat.util.basicEval.{MaterialEvaluation, EndgameFilter, BasicEvaluation}
 import com.alanjz.meerkat.util.basicMove.MoveGenerator
 import com.alanjz.meerkat.util.parsing.FENParser.FEN
 import com.alanjz.meerkat.util.strings.NodeStringBuilder
@@ -29,7 +29,9 @@ class BasicNode(val pieces : List[Option[Piece]] = List.fill(64) (None),
                 val castleRules : CastleRule = CastleRule.all,
                 val enPassant : Option[Square] = None,
                 val activeKing : Option[Square] = None,
-                val inactiveKing : Option[Square] = None) extends Node {
+                val inactiveKing : Option[Square] = None,
+                val activeCastled : Boolean = false,
+                val inactiveCastled : Boolean = false) extends Node {
 
   /**
    * The moves available from this position
@@ -63,7 +65,11 @@ class BasicNode(val pieces : List[Option[Piece]] = List.fill(64) (None),
 
   override def as(color : Color) : BasicNode =
     if(color == active) this
-    else new BasicNode(pieces, fullMove, halfMove, color, castleRules, None, inactiveKing, activeKing)
+    else new BasicNode(pieces, fullMove,
+      halfMove, color,
+      castleRules, None,
+      inactiveKing, activeKing,
+      inactiveCastled, activeCastled)
 
   /**
    * Gets the piece at the given square or `None` if empty or off the board.
@@ -109,9 +115,16 @@ class BasicNode(val pieces : List[Option[Piece]] = List.fill(64) (None),
       case PawnPromoteCapture(_,_,_,_) => 0
       case _ => halfMove+1
     }
+    var activeC = activeCastled
     val cRule = move match {
-      case KingCastleLong(_) => castleRules - KingCastleLong(active) - KingCastleShort(active)
-      case KingCastleShort(_) => castleRules - KingCastleShort(active) - KingCastleLong(active)
+      case KingCastleLong(_) => {
+        activeC = true
+        castleRules - KingCastleLong(active) - KingCastleShort(active)
+      }
+      case KingCastleShort(_) => {
+        activeC = true
+        castleRules - KingCastleShort(active) - KingCastleLong(active)
+      }
       case KingMove(_,_) => castleRules - KingCastleShort(active) - KingCastleLong(active)
       case KingCapture(_,_,_) => castleRules - KingCastleShort(active) - KingCastleLong(active)
       case RookMove(o,_) =>
@@ -145,7 +158,11 @@ class BasicNode(val pieces : List[Option[Piece]] = List.fill(64) (None),
       case KingCapture(_,_,_) => Some(move.target)
       case _ => activeKing
     }
-    new BasicNode(buffer.toList, fMove, hMove, !active, cRule, ep, inactiveKing, aKing)
+    new BasicNode(buffer.toList,
+      fMove, hMove,
+      !active, cRule,
+      ep, inactiveKing, aKing,
+      inactiveCastled, activeC)
   }
 
   /**
@@ -157,9 +174,10 @@ class BasicNode(val pieces : List[Option[Piece]] = List.fill(64) (None),
     val builder = StringBuilder.newBuilder
     builder ++= NodeStringBuilder.mkString(this)
     builder += '\n'
-    builder ++= s"$active [${BasicEvaluation.evaluate(this)}] fullMove=$fullMove " +
+    builder ++= s"$active [${MaterialEvaluation.evaluate(this)}] fullMove=$fullMove " +
       s"halfMove=$halfMove castle=$castleRules enPassant=${enPassant.getOrElse('-')}\n" +
-      s"activeKing=$activeKing inactiveKing=$inactiveKing"
+      s"activeKing=$activeKing inactiveKing=$inactiveKing " +
+      s"endgame=${EndgameFilter.isEndgame(this)}"
   }
 
   /**
