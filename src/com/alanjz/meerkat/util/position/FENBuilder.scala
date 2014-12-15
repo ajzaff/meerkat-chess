@@ -1,8 +1,12 @@
 package com.alanjz.meerkat.util.position
 
-import com.alanjz.meerkat.position.immutable.BasicNode
-import com.alanjz.meerkat.util.parsing.FENParser.FEN
+import com.alanjz.meerkat.util.position.FENBuilder.FEN
+import com.alanjz.meerkat.position.mutable.Node
 
-class FENBuilder(node : BasicNode) {
+class FENBuilder(node : Node) {
   def mkFEN : FEN = ???
+}
+
+object FENBuilder {
+  type FEN = String
 }

@@ -22,20 +22,18 @@ object RayGeneration extends App {
     val end = if(shift < 0) 0 else 63
     var mask = BitMask.empty
     var i = from
-    var done = false
 
-    def nend: Boolean =
+    def n_end: Boolean =
       if(end <= 0) i >= end
       else i <= end
 
-    do {
-      mask |= 1l << i
-      if(scary(i,shift)) {
-        done = true
-      }
+    while (n_end && !scary(i, shift))
+    {
       i += shift
+      if(n_end) {
+        mask |= 1l << i
+      }
     }
-    while (nend && !done)
     mask
   }
 

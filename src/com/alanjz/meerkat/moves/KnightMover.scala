@@ -1,5 +1,6 @@
 package com.alanjz.meerkat.moves
 
+import com.alanjz.meerkat.moves.Move.{KnightCapture, KnightMove}
 import com.alanjz.meerkat.position.mutable.MaskNode
 import com.alanjz.meerkat.util.numerics.BitMask
 import com.alanjz.meerkat.util.numerics.BitMask.{BitMask, File, Rank}
@@ -15,12 +16,10 @@ class KnightMover(val node : MaskNode) extends IntermediateMover {
    * These are specifically attacking moves.
    * This does not include castling, or pawn advances.
    *
+   * @param knights the knights mask.
    * @return the attacks possible by this piece.
    */
-  override def getAttacks: BitMask = {
-
-    // get active knights.
-    val knights = node.activeKnights
+  override def getAttacks(knights : BitMask): BitMask = {
 
     // initialize moves.
     var moves = BitMask.empty
@@ -60,10 +59,39 @@ class KnightMover(val node : MaskNode) extends IntermediateMover {
   override def getPseudos: BitMask = {
 
     val active = node.activePieces
-    val inactive = node.inactivePieces
 
     // return moves.
-    getAttacks & inactive & ~active
+    getAttacks(node.activeKnights) & ~active
   }
 
+  /**
+   * Serializes the pseudo-legal moves.
+   * @return a list of pseudo-legal moves of the appropriate type.
+   */
+  override def mkList: List[Move] = {
+    val builder = List.newBuilder[Move]
+    var moves = getPseudos
+    val activeKnights = node.activeKnights
+
+    while(moves > BitMask.empty) {
+
+      val lsb = BitMask.bitScanForward(moves)
+      var sources = getAttacks(1l << lsb) & activeKnights
+
+      while(sources > BitMask.empty) {
+        val source = BitMask.bitScanForward(sources)
+        if(node.empty(lsb)) {
+          builder += KnightMove(source, lsb)
+        }
+        else {
+          builder += KnightCapture(source, lsb, node.at(lsb).get)
+        }
+        sources &= (sources-1)
+      }
+
+      moves &= (moves-1)
+    }
+
+    builder.result()
+  }
 }

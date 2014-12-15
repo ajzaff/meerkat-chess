@@ -489,7 +489,7 @@ object Move {
    * @param color active team.
    */
   
-  case class KingCastleShort(val color : Color) extends Move with Move.Castle {
+  case class KingCastleShort(color : Color) extends Move with Move.Castle {
 
     /**
      * Set the origin based on color.

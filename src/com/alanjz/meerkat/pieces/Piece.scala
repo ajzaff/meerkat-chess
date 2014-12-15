@@ -70,7 +70,7 @@ object Piece {
    * @param color a color.
    */
 
-  case class Queen(val color : Color) extends Piece with Promoted {
+  case class Queen(color : Color) extends Piece with Promoted {
     val name = "queen"
   }
 
@@ -79,7 +79,7 @@ object Piece {
    * @param color a color.
    */
 
-  case class King(val color : Color) extends Piece {
+  case class King(color : Color) extends Piece {
     val name = "king"
   }
 
@@ -102,5 +102,66 @@ object Piece {
     case Rook(Black) => 'r'
     case Queen(Black) => 'q'
     case King(Black) => 'k'
+  }
+}
+
+/**
+ * Standard piece color base class.
+ */
+
+sealed abstract class Color(val name : String) {
+
+  /**
+   * A reference to the other team.
+   */
+  val other : Color
+
+  /**
+   * Gets the other color.
+   * @see other
+   * @return the other color.
+   */
+
+  implicit def unary_! : Color = other
+
+  /**
+   * Gets the name of this color as a string.
+   * @return the color as a string.
+   */
+
+  override def toString = name
+}
+
+/**
+ * Standard piece color values.
+ */
+
+object Color {
+
+  /**
+   * Implicit casts a color to an integer.
+   * @param color a color.
+   * @return `1` if White; `-1` if black.
+   */
+
+  implicit def Color2Int(color : Color) : Int = color match {
+    case White => 1
+    case Black => -1
+  }
+
+  /**
+   * The standard color `White`.
+   */
+
+  case object White extends Color("white") {
+    val other = Black
+  }
+
+  /**
+   * The standard color `Black`.
+   */
+
+  case object Black extends Color("black") {
+    val other = White
   }
 }
