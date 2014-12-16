@@ -7,13 +7,11 @@ import com.alanjz.meerkat.util.numerics.BitMask.BitMask
 
 class PseudoLegalMover(node : MaskNode) {
 
-
-  def getMoves : List[Move] = {
-
-
-    val builder = List.newBuilder[Move]
-
-
-    builder.result()
-  }
+  def getMoves : List[Move] =
+    new PawnMover(node).mkList ++
+      new KnightMover(node).mkList ++
+      new BishopMover(node).mkList ++
+      new RookMover(node).mkList ++
+      new QueenMover(node).mkList ++
+      new KingMover(node).mkList
 }

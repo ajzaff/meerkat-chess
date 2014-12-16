@@ -3,6 +3,7 @@ package com.alanjz.meerkat.moves
 import com.alanjz.meerkat.position.mutable.MaskNode
 import com.alanjz.meerkat.util.numerics.BitMask
 import com.alanjz.meerkat.util.numerics.BitMask.BitMask
+import com.alanjz.meerkat.util.position.mutable.{FENBuilder, NodeStringBuilder}
 
 class Attacker(node : MaskNode) {
 
@@ -24,15 +25,18 @@ class Attacker(node : MaskNode) {
     val knightMover = new KnightMover(node)
     val bishopMover = new BishopMover(node)
     val rookMover = new RookMover(node)
-    val queenMover = new QueenMover(node)
     val kingMover = new KingMover(node)
+
+    // Save rook and bishop attacks for later.
+    val bishopAttacks = bishopMover.getAttacks(mask)
+    val rookAttacks = rookMover.getAttacks(mask)
 
     // Traces attacks back to enemy pieces.
     attackers |= pawnMover.getAttacks(mask) & inactivePawns
     attackers |= knightMover.getAttacks(mask) & inactiveKnights
-    attackers |= bishopMover.getAttacks(mask) & inactiveBishops
-    attackers |= rookMover.getAttacks(mask) & inactiveRooks
-    attackers |= queenMover.getAttacks(mask) & inactiveQueens
+    attackers |= bishopAttacks & inactiveBishops
+    attackers |= rookAttacks & inactiveRooks
+    attackers |= (rookAttacks | bishopAttacks) & inactiveQueens
     attackers |= kingMover.getAttacks(mask) & inactiveKing
 
     // Return the attackers.

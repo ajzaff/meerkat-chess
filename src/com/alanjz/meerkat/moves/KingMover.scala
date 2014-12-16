@@ -1,13 +1,13 @@
 package com.alanjz.meerkat.moves
 
-import com.alanjz.meerkat.pieces.Color.White
+import com.alanjz.meerkat.Square
+import com.alanjz.meerkat.moves.Move.{KingCapture, KingCastleShort, KingCastleLong, KingMove}
+import com.alanjz.meerkat.pieces.Color.{Black, White}
 import com.alanjz.meerkat.position.mutable.MaskNode
 import com.alanjz.meerkat.util.numerics.BitMask.{File, Rank, BitMask}
 import com.alanjz.meerkat.util.numerics.{BitMask, CastleMask}
 
-/**
- * Created by alan on 12/14/14.
- */
+
 class KingMover(val node : MaskNode) extends IntermediateMover {
   /**
    * Returns all possible moves regardless of legality
@@ -73,8 +73,7 @@ class KingMover(val node : MaskNode) extends IntermediateMover {
       // Test long black castling.
       if((node.castleMask & CastleMask.longBlack) != CastleMask.empty) {
 
-        process_castle(BitMask.Square.E8,
-          BitMask.Square.D8 | BitMask.Square.C8 | BitMask.Square.B8, BitMask.Square.C8)
+        process_castle(BitMask.Square.E8, BitMask.Square.D8 | BitMask.Square.C8, BitMask.Square.C8)
       }
     }
 
@@ -90,12 +89,47 @@ class KingMover(val node : MaskNode) extends IntermediateMover {
     val inactive = node.inactivePieces
 
     // Return moves.
-    getAttacks(node.activeKing) & inactive & ~active | getCastles
+    getAttacks(node.activeKing) & ~active | getCastles
   }
 
   /**
    * Serializes the pseudo-legal moves.
    * @return a list of pseudo-legal moves of the appropriate type.
    */
-  override def mkList: List[Move] = ???
+  override def mkList: List[Move] = {
+    val builder = List.newBuilder[Move]
+    val activeKing = node.activeKing
+    var moves = getPseudos
+
+    while(moves != BitMask.empty) {
+      val lsb = BitMask.bitScanForward(moves)
+      var sources = getAttacks(1l << lsb) & activeKing
+
+      // This must be a castle move.
+      if(sources == BitMask.empty) {
+        Square(lsb) match {
+          case Square.C1 => builder += KingCastleLong(White)
+          case Square.G1 => builder += KingCastleShort(White)
+          case Square.C8 => builder += KingCastleLong(Black)
+          case Square.G8 => builder += KingCastleShort(Black)
+          case _ => throw new IllegalStateException(s"Illegal move to $lsb in bit mask.")
+        }
+      }
+      else {
+        while(sources != BitMask.empty) {
+          val source = BitMask.bitScanForward(sources)
+          if(node.empty(lsb)) {
+            builder += KingMove(source,lsb)
+          }
+          else {
+            builder += KingCapture(source, lsb, node.at(lsb).get)
+          }
+          sources &= (sources-1)
+        }
+      }
+      moves &= (moves-1)
+    }
+
+    builder.result()
+  }
 }

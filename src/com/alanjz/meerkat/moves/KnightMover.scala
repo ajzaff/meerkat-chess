@@ -73,12 +73,12 @@ class KnightMover(val node : MaskNode) extends IntermediateMover {
     var moves = getPseudos
     val activeKnights = node.activeKnights
 
-    while(moves > BitMask.empty) {
+    while(moves != BitMask.empty) {
 
       val lsb = BitMask.bitScanForward(moves)
       var sources = getAttacks(1l << lsb) & activeKnights
 
-      while(sources > BitMask.empty) {
+      while(sources != BitMask.empty) {
         val source = BitMask.bitScanForward(sources)
         if(node.empty(lsb)) {
           builder += KnightMove(source, lsb)

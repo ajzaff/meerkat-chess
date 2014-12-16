@@ -1,5 +1,6 @@
 package com.alanjz.meerkat.moves
 
+import com.alanjz.meerkat.moves.Move.{QueenMove, QueenCapture}
 import com.alanjz.meerkat.position.mutable.MaskNode
 import com.alanjz.meerkat.util.numerics.BitMask
 import com.alanjz.meerkat.util.numerics.BitMask._
@@ -34,5 +35,28 @@ class QueenMover(val node : MaskNode) extends IntermediateMover {
    * Serializes the pseudo-legal moves.
    * @return a list of pseudo-legal moves of the appropriate type.
    */
-  override def mkList: List[Move] = ???
+  override def mkList: List[Move] = {
+    val builder = List.newBuilder[Move]
+    var moves = getPseudos
+    val activeQueens = node.activeQueens
+
+    while(moves != BitMask.empty) {
+      val lsb = BitMask.bitScanForward(moves)
+      var sources = getAttacks(1l << lsb) & activeQueens
+
+      while(sources != BitMask.empty) {
+        val source = BitMask.bitScanForward(sources)
+        if(node.empty(lsb)) {
+          builder += QueenMove(source, lsb)
+        }
+        else {
+          builder += QueenCapture(source, lsb, node.at(lsb).get)
+        }
+        sources &= (sources-1)
+      }
+      moves &= (moves-1)
+    }
+
+    builder.result()
+  }
 }

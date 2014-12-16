@@ -7,6 +7,11 @@ import com.alanjz.meerkat.util.position.mutable.{NodeStringBuilder, FENMaskNodeB
  * Created by alan on 12/15/14.
  */
 object KnightMoverTest extends App {
+
+  /*
+  FENMaskNodeBuilder.parse("7N/8/8/8/8/8/8/8 w - - 0 1")
+   */
+
   val pos = MaskNode.initialPosition
 
   println( NodeStringBuilder.mkString(pos) )

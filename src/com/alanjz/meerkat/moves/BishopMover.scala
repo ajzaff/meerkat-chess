@@ -1,5 +1,6 @@
 package com.alanjz.meerkat.moves
 
+import com.alanjz.meerkat.moves.Move.{BishopCapture, BishopMove}
 import com.alanjz.meerkat.position.mutable.MaskNode
 import com.alanjz.meerkat.util.numerics.BitMask
 import com.alanjz.meerkat.util.numerics.BitMask.BitMask
@@ -21,7 +22,7 @@ class BishopMover(val node : MaskNode) extends IntermediateMover {
     var moves = BitMask.empty
 
     // All pieces.
-    val allPieces = node.activePieces | node.inactivePieces
+    val allPieces = node.allPieces
 
     while(bishops != BitMask.empty) {
 
@@ -38,7 +39,7 @@ class BishopMover(val node : MaskNode) extends IntermediateMover {
       val southeastMSB = BitMask.bitScanReverse(southeastRay & allPieces)
       val southwestMSB = BitMask.bitScanReverse(southwestRay & allPieces)
       val northeastLSB = BitMask.bitScanForward(northeastRay & allPieces)
-      val northwestLSB = BitMask.bitScanForward(northeastRay & allPieces)
+      val northwestLSB = BitMask.bitScanForward(northwestRay & allPieces)
 
       // Get the combo rays.
       val northeastCombo =
@@ -80,5 +81,28 @@ class BishopMover(val node : MaskNode) extends IntermediateMover {
    * Serializes the pseudo-legal moves.
    * @return a list of pseudo-legal moves of the appropriate type.
    */
-  override def mkList: List[Move] = ???
+  override def mkList: List[Move] = {
+    val builder = List.newBuilder[Move]
+    var moves = getPseudos
+    val activeBishops = node.activeBishops
+
+    while(moves != BitMask.empty) {
+      val lsb = BitMask.bitScanForward(moves)
+      var sources = getAttacks(1l << lsb) & activeBishops
+
+      while(sources != BitMask.empty) {
+        val source = BitMask.bitScanForward(sources)
+        if(node.empty(lsb)) {
+          builder += BishopMove(source, lsb)
+        }
+        else {
+          builder += BishopCapture(source, lsb, node.at(lsb).get)
+        }
+        sources &= (sources-1)
+      }
+      moves &= (moves-1)
+    }
+
+    builder.result()
+  }
 }

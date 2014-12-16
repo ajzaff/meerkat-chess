@@ -1,5 +1,6 @@
 package com.alanjz.meerkat.moves
 
+import com.alanjz.meerkat.moves.Move.{RookMove, RookCapture}
 import com.alanjz.meerkat.position.mutable.MaskNode
 import com.alanjz.meerkat.util.numerics.BitMask
 import com.alanjz.meerkat.util.numerics.BitMask._
@@ -21,7 +22,7 @@ class RookMover(val node : MaskNode) extends IntermediateMover {
     var moves = BitMask.empty
 
     // All pieces.
-    val allPieces = node.activePieces | node.inactivePieces
+    val allPieces = node.allPieces
 
     while(rooks != BitMask.empty) {
 
@@ -35,27 +36,27 @@ class RookMover(val node : MaskNode) extends IntermediateMover {
       val westRay = BitMask.Ray.west(lsb)
 
       // Get some intersections.
-      val eastMSB = BitMask.bitScanReverse(eastRay & allPieces)
-      val southLSB = BitMask.bitScanForward(southRay & allPieces)
-      val westLSB = BitMask.bitScanForward(northRay & allPieces)
-      val northMSB = BitMask.bitScanReverse(northRay & allPieces)
+      val eastLSB = BitMask.bitScanForward(eastRay & allPieces)
+      val southMSB = BitMask.bitScanReverse(southRay & allPieces)
+      val westMSB = BitMask.bitScanReverse(westRay & allPieces)
+      val northLSB = BitMask.bitScanForward(northRay & allPieces)
 
       // Get the combo rays.
-      val northeastCombo =
-        if(westLSB < 0) northRay
-        else northRay ^ BitMask.Ray.northeast(westLSB)
-      val southeastCombo =
-        if(eastMSB < 0) eastRay
-        else eastRay ^ BitMask.Ray.southeast(eastMSB)
-      val southwestCombo =
-        if(southLSB < 0) southRay
-        else southRay ^ BitMask.Ray.southwest(southLSB)
-      val northwestCombo =
-        if(northMSB < 0) westRay
-        else westRay ^ BitMask.Ray.northwest(northMSB)
+      val northCombo =
+        if(northLSB < 0) northRay
+        else northRay ^ BitMask.Ray.north(northLSB)
+      val eastCombo =
+        if(eastLSB < 0) eastRay
+        else eastRay ^ BitMask.Ray.east(eastLSB)
+      val southCombo =
+        if(southMSB < 0) southRay
+        else southRay ^ BitMask.Ray.south(southMSB)
+      val westCombo =
+        if(westMSB < 0) westRay
+        else westRay ^ BitMask.Ray.west(westMSB)
 
       // Get all moves for this bishop.
-      moves = moves | northeastCombo | southeastCombo | southwestCombo | northwestCombo
+      moves = moves | northCombo | eastCombo | southCombo | westCombo
 
       // The twos-decrement removes this bishop.
       rooks &= (rooks-1)
@@ -80,5 +81,28 @@ class RookMover(val node : MaskNode) extends IntermediateMover {
    * Serializes the pseudo-legal moves.
    * @return a list of pseudo-legal moves of the appropriate type.
    */
-  override def mkList: List[Move] = ???
+  override def mkList: List[Move] = {
+    val builder = List.newBuilder[Move]
+    var moves = getPseudos
+    val activeRooks = node.activeRooks
+
+    while(moves != BitMask.empty) {
+      val lsb = BitMask.bitScanForward(moves)
+      var sources = getAttacks(1l << lsb) & activeRooks
+
+      while(sources != BitMask.empty) {
+        val source = BitMask.bitScanForward(sources)
+        if(node.empty(lsb)) {
+          builder += RookMove(source, lsb)
+        }
+        else {
+          builder += RookCapture(source, lsb, node.at(lsb).get)
+        }
+        sources &= (sources-1)
+      }
+      moves &= (moves-1)
+    }
+
+    builder.result()
+  }
 }

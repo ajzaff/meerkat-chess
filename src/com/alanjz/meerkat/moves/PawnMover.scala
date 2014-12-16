@@ -6,7 +6,7 @@ import com.alanjz.meerkat.pieces.Color.{Black, White}
 import com.alanjz.meerkat.pieces.Piece.{Bishop, Rook, Knight, Queen}
 import com.alanjz.meerkat.position.mutable.MaskNode
 import com.alanjz.meerkat.util.numerics.BitMask
-import com.alanjz.meerkat.util.numerics.BitMask.BitMask
+import com.alanjz.meerkat.util.numerics.BitMask.{Rank, BitMask}
 
 class PawnMover(val node : MaskNode) extends IntermediateMover {
 
@@ -161,8 +161,16 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
     // get active pieces.
     val active = node.activePieces
 
+    // Get the en passant rank mask.
+    val epRank = node.active match {
+      case White => Rank._5
+      case Black => Rank._4
+    }
+
     // all captures, en passant, and advances.
-    getAttacks(node.activePawns) & ((inactive & ~active) | node.enPassant) | getAdvances
+    getAttacks(node.activePawns) & inactive |
+      getAttacks(node.activePawns & epRank) & node.enPassant |
+      getAdvances & ~active
   }
 
   /**
@@ -186,12 +194,12 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         if((1l << lsb) == node.enPassant) {
 
           // Left capture.
-          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb-7))) > BitMask.empty) {
+          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb-7))) != BitMask.empty) {
             builder += PawnEPCapture(lsb-7, lsb)
           }
 
           // Right capture.
-          if(lsb % 8 != 0 && (activePawns & (1l << (lsb-9))) > BitMask.empty) {
+          if(lsb % 8 != 0 && (activePawns & (1l << (lsb-9))) != BitMask.empty) {
             builder += PawnEPCapture(lsb-9, lsb)
           }
         }
@@ -200,7 +208,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         else if(node.empty(lsb)) {
 
           // Double advance.
-          if((activePawns & (1l << (lsb-16))) > BitMask.empty) {
+          if((activePawns & (1l << (lsb-16))) != BitMask.empty) {
             builder += PawnAdvance(lsb-16, lsb)
           }
           else {
@@ -221,7 +229,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         else {
 
           // Left capture.
-          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb-7))) > BitMask.empty) {
+          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb-7))) != BitMask.empty) {
             if(lsb >= Square.A8.toInt) {
               builder += PawnPromoteCapture(lsb-7, lsb, node.at(lsb).get, Queen(White))
               builder += PawnPromoteCapture(lsb-7, lsb, node.at(lsb).get, Knight(White))
@@ -235,7 +243,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
           }
 
           // Right capture.
-          if(lsb % 8 != 0 && (activePawns & (1l << (lsb-9))) > BitMask.empty) {
+          if(lsb % 8 != 0 && (activePawns & (1l << (lsb-9))) != BitMask.empty) {
             if(lsb >= Square.A8.toInt) {
               builder += PawnPromoteCapture(lsb-9, lsb, node.at(lsb).get, Queen(White))
               builder += PawnPromoteCapture(lsb-9, lsb, node.at(lsb).get, Knight(White))
@@ -256,12 +264,12 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         if((1l << lsb) == node.enPassant) {
 
           // Left capture.
-          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb+9))) > BitMask.empty) {
+          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb+9))) != BitMask.empty) {
             builder += PawnEPCapture(lsb+9, lsb)
           }
 
           // Right capture.
-          if(lsb % 8 != 0 && (activePawns & (1l << (lsb+7))) > BitMask.empty) {
+          if(lsb % 8 != 0 && (activePawns & (1l << (lsb+7))) != BitMask.empty) {
             builder += PawnEPCapture(lsb+7, lsb)
           }
         }
@@ -270,7 +278,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         else if(node.empty(lsb)) {
 
           // Double advance.
-          if((activePawns & (1l << (lsb+16))) > BitMask.empty) {
+          if((activePawns & (1l << (lsb+16))) != BitMask.empty) {
             builder += PawnAdvance(lsb+16, lsb)
           }
           else {
@@ -291,7 +299,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         else {
 
           // Left capture.
-          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb+9))) > BitMask.empty) {
+          if((lsb+1) % 8 != 0 && (activePawns & (1l << (lsb+9))) != BitMask.empty) {
             if(lsb <= Square.H1.toInt) {
               builder += PawnPromoteCapture(lsb+9, lsb, node.at(lsb).get, Queen(Black))
               builder += PawnPromoteCapture(lsb+9, lsb, node.at(lsb).get, Knight(Black))
@@ -305,7 +313,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
           }
 
           // Right capture.
-          if(lsb % 8 != 0 && (activePawns & (1l << (lsb+7))) > BitMask.empty) {
+          if(lsb % 8 != 0 && (activePawns & (1l << (lsb+7))) != BitMask.empty) {
             if(lsb <= Square.H1.toInt) {
               builder += PawnPromoteCapture(lsb+7, lsb, node.at(lsb).get, Queen(Black))
               builder += PawnPromoteCapture(lsb+7, lsb, node.at(lsb).get, Knight(Black))
