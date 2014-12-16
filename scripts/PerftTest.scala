@@ -47,12 +47,13 @@ object PerftTest extends App {
     num
   }
 
-  val node = FENMaskNodeBuilder.parse("r4rk1/p1pNqpb1/bn2pnp1/3P4/1p2P3/2N2Q1p/PPPBBPPP/R4K1R b - - 0 0 1")
+  //FENMaskNodeBuilder.parse("r4r1k/p1pNqpb1/bn2pnp1/3P4/1p2P3/2N2Q1p/PPPBBPPP/R4K1R w - - 0 1")
+  val node = MaskNode.initialPosition
 
   println(node)
   println(new PseudoLegalMover(node).getMoves.mkString(" "))
 
   val start = System.nanoTime()
-  divide(node, 1)
+  divide(node, 5)
   println(s"${(System.nanoTime() - start) / 1e9}s")
 }

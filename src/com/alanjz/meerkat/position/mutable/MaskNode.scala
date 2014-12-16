@@ -118,12 +118,12 @@ class MaskNode extends Node {
   def inCheck(who : Color) : Boolean = {
     var check = false
     if(who != active) {
-      active = ! active
+      active = !active
       check = new Attacker(this).getAttackers(who match {
         case White => whiteKing
         case Black => blackKing
       }) != BitMask.empty
-      active = ! active
+      active = !active
     } else
       check = new Attacker(this).getAttackers(who match {
         case White => whiteKing

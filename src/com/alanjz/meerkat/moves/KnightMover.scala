@@ -31,16 +31,16 @@ class KnightMover(val node : MaskNode) extends IntermediateMover {
     moves |= (knights & ~Rank._8 & ~File.G & ~File.H) << 10
 
     // 4:00
-    moves |= (knights & ~Rank._1 & ~File.G & ~File.H) >> 6
+    moves |= (knights & ~Rank._1 & ~File.G & ~File.H) >>> 6
 
     // 5:00
-    moves |= (knights & ~Rank._1 & ~Rank._2 & ~File.H) >> 15
+    moves |= (knights & ~Rank._1 & ~Rank._2 & ~File.H) >>> 15
 
     // 7:00
-    moves |= (knights & ~Rank._1 & ~Rank._2 & ~File.A) >> 17
+    moves |= (knights & ~Rank._1 & ~Rank._2 & ~File.A) >>> 17
 
     // 8:00
-    moves |= (knights & ~Rank._1 & ~File.A & ~File.B) >> 10
+    moves |= (knights & ~Rank._1 & ~File.A & ~File.B) >>> 10
 
     // 10:00
     moves |= (knights & ~Rank._8 & ~File.A & ~File.B) << 6

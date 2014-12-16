@@ -40,7 +40,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
 
     // left captures.
     if(node.active == White) moves |= (pawns & ~BitMask.File.A) << 7
-    else moves |= (pawns & ~BitMask.File.A) >> 9
+    else moves |= (pawns & ~BitMask.File.A) >>> 9
 
     // return.
     moves
@@ -53,7 +53,7 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
 
     // left captures.
     if(node.active == White) moves |= (pawns & ~BitMask.File.H) << 9
-    else moves |= (pawns & ~BitMask.File.H) >> 7
+    else moves |= (pawns & ~BitMask.File.H) >>> 7
 
     // return.
     moves
@@ -93,13 +93,13 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
     var moves : BitMask = 0
 
     // pawn advances
-    moves |= pawns >> 8
+    moves |= pawns >>> 8
 
     // get home pawns.
     val homePawns = pawns & BitMask.Rank._7
 
     // home row advances.
-    moves |= (homePawns >> 16) & ~(pieces >> 8)
+    moves |= (homePawns >>> 16) & ~(pieces >>> 8)
 
     // legalize the moves.
     moves &= ~pieces

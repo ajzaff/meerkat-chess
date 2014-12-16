@@ -25,10 +25,10 @@ class KingMover(val node : MaskNode) extends IntermediateMover {
     (king & ~Rank._8) << 8 |
       (king & ~Rank._8 & ~File.H) << 9 |
       (king & ~File.H) << 1 |
-      (king & ~Rank._1 & ~File.H) >> 7 |
-      (king & ~Rank._1) >> 8 |
-      (king & ~Rank._1 & ~File.A) >> 9 |
-      (king & ~File.A) >> 1 |
+      (king & ~Rank._1 & ~File.H) >>> 7 |
+      (king & ~Rank._1) >>> 8 |
+      (king & ~Rank._1 & ~File.A) >>> 9 |
+      (king & ~File.A) >>> 1 |
       (king & ~Rank._8 & ~File.A) << 7
   }
 

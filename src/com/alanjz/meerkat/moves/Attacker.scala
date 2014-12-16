@@ -27,17 +27,20 @@ class Attacker(node : MaskNode) {
     val rookMover = new RookMover(node)
     val kingMover = new KingMover(node)
 
-    // Save rook and bishop attacks for later.
+    // Save attacks for later.
+    val pawnAttacks = pawnMover.getAttacks(mask)
     val bishopAttacks = bishopMover.getAttacks(mask)
     val rookAttacks = rookMover.getAttacks(mask)
+    val knightAttacks = knightMover.getAttacks(mask)
+    val kingAttacks = kingMover.getAttacks(mask)
 
     // Traces attacks back to enemy pieces.
-    attackers |= pawnMover.getAttacks(mask) & inactivePawns
-    attackers |= knightMover.getAttacks(mask) & inactiveKnights
+    attackers |= pawnAttacks & inactivePawns
+    attackers |= knightAttacks & inactiveKnights
     attackers |= bishopAttacks & inactiveBishops
     attackers |= rookAttacks & inactiveRooks
     attackers |= (rookAttacks | bishopAttacks) & inactiveQueens
-    attackers |= kingMover.getAttacks(mask) & inactiveKing
+    attackers |= kingAttacks & inactiveKing
 
     // Return the attackers.
     attackers
