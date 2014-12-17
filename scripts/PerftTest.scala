@@ -48,12 +48,22 @@ object PerftTest extends App {
   }
 
   //FENMaskNodeBuilder.parse("r4r1k/p1pNqpb1/bn2pnp1/3P4/1p2P3/2N2Q1p/PPPBBPPP/R4K1R w - - 0 1")
-  val node = MaskNode.initialPosition
+  //FENMaskNodeBuilder.parse("r3k2r/p2pqpb1/bn1ppnp1/1B2N3/1p2P3/2N2Q1p/PPPB1PPP/R3K2R b KQkq - 0 1")
+  val node = FENMaskNodeBuilder.parse("rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6")
+  // MaskNode.initialPosition
+
+  var moves = new PseudoLegalMover(node).getMoves
+  /*node.make(moves.find(_.toString=="Nc6").get)
+  moves = new PseudoLegalMover(node).getMoves
+  node.make(moves.find(_.toString=="hxg2").get)
+  moves = new PseudoLegalMover(node).getMoves
+  node.make(moves.find(_.toString=="Nb8").get)
+  moves = new PseudoLegalMover(node).getMoves*/
 
   println(node)
-  println(new PseudoLegalMover(node).getMoves.mkString(" "))
+  println(moves.mkString(" "))
 
   val start = System.nanoTime()
-  divide(node, 5)
+  divide(node,4)
   println(s"${(System.nanoTime() - start) / 1e9}s")
 }

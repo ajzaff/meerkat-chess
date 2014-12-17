@@ -208,7 +208,8 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         else if(node.empty(lsb)) {
 
           // Double advance.
-          if((activePawns & (1l << (lsb-16))) != BitMask.empty) {
+          if((activePawns & 1l << (lsb-16)) != BitMask.empty &&
+             (activePawns & 1l << (lsb-8)) == BitMask.empty) {
             builder += PawnAdvance(lsb-16, lsb)
           }
           else {
@@ -278,7 +279,8 @@ class PawnMover(val node : MaskNode) extends IntermediateMover {
         else if(node.empty(lsb)) {
 
           // Double advance.
-          if((activePawns & (1l << (lsb+16))) != BitMask.empty) {
+          if((activePawns & 1l << (lsb+16)) != BitMask.empty  &&
+             (activePawns & 1l << (lsb+8)) == BitMask.empty) {
             builder += PawnAdvance(lsb+16, lsb)
           }
           else {

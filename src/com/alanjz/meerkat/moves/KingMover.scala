@@ -37,8 +37,11 @@ class KingMover(val node : MaskNode) extends IntermediateMover {
 
     var moves = BitMask.empty
 
-    def process_castle(kingMask : BitMask, emptyMask : BitMask, destMask : BitMask): Unit = {
-      val atk = new Attacker(node).getAttackers(kingMask | emptyMask)
+    def process_castle(kingMask : BitMask,
+                       emptyMask : BitMask,
+                       attackMask : BitMask,
+                       destMask : BitMask): Unit = {
+      val atk = new Attacker(node).getAttackers(attackMask)
       val empty = node.allPieces & emptyMask
 
       if(atk == BitMask.empty && empty == BitMask.empty) {
@@ -52,14 +55,19 @@ class KingMover(val node : MaskNode) extends IntermediateMover {
       // Test short white castling.
       if((node.castleMask & CastleMask.shortWhite) != CastleMask.empty) {
 
-        process_castle(BitMask.Square.E1, BitMask.Square.F1 | BitMask.Square.G1, BitMask.Square.G1)
+        process_castle(BitMask.Square.E1,
+          BitMask.Square.F1 | BitMask.Square.G1,
+          BitMask.Square.E1 | BitMask.Square.F1 | BitMask.Square.G1,
+          BitMask.Square.G1)
       }
 
       // Test long white castling.
       if((node.castleMask & CastleMask.longWhite) != CastleMask.empty) {
 
         process_castle(BitMask.Square.E1,
-          BitMask.Square.D1 | BitMask.Square.C1 | BitMask.Square.B1, BitMask.Square.C1)
+          BitMask.Square.B1 | BitMask.Square.C1 | BitMask.Square.D1,
+          BitMask.Square.E1 | BitMask.Square.C1 | BitMask.Square.D1,
+          BitMask.Square.C1)
       }
     }
     else {
@@ -67,13 +75,19 @@ class KingMover(val node : MaskNode) extends IntermediateMover {
       // Test short black castling.
       if((node.castleMask & CastleMask.shortBlack) != CastleMask.empty) {
 
-        process_castle(BitMask.Square.E8, BitMask.Square.F8 | BitMask.Square.G8, BitMask.Square.G8)
+        process_castle(BitMask.Square.E8,
+          BitMask.Square.F8 | BitMask.Square.G8,
+          BitMask.Square.E8 | BitMask.Square.F8 | BitMask.Square.G8,
+          BitMask.Square.G8)
       }
 
       // Test long black castling.
       if((node.castleMask & CastleMask.longBlack) != CastleMask.empty) {
 
-        process_castle(BitMask.Square.E8, BitMask.Square.D8 | BitMask.Square.C8, BitMask.Square.C8)
+        process_castle(BitMask.Square.E8,
+          BitMask.Square.B8 | BitMask.Square.C8 | BitMask.Square.D8,
+          BitMask.Square.E8 | BitMask.Square.C8 | BitMask.Square.D8,
+          BitMask.Square.C8)
       }
     }
 

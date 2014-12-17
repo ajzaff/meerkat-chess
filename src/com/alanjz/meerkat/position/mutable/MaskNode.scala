@@ -183,6 +183,28 @@ class MaskNode extends Node {
 
   override def make(move: Move) : Unit = {
 
+    def considerRookCapture(target : Square, captured : Piece): Unit = captured match {
+      case Rook(c) => {
+        if(c == White) {
+          if(target == Square.A1) {
+            castleMask &= ~CastleMask.longWhite
+          }
+          else if(target == Square.H1) {
+            castleMask &= ~CastleMask.shortWhite
+          }
+        }
+        else {
+          if(target == Square.A8) {
+            castleMask &= ~CastleMask.longBlack
+          }
+          else if(target == Square.H8) {
+            castleMask &= ~CastleMask.shortBlack
+          }
+        }
+      }
+      case _ =>
+    }
+
     // Prepend the move state information.
     enPassantList +:= enPassant
     halfMoveList +:= halfMove
@@ -210,6 +232,8 @@ class MaskNode extends Node {
       case PawnPromoteCapture(o,t,c,p) =>
         // Reset the half move counter.
         halfMove = 0
+
+        considerRookCapture(t,c)
 
         flip(Pawn(active), o)
         flip(c, t)
@@ -261,6 +285,8 @@ class MaskNode extends Node {
             }
           case _ =>
         }
+
+        considerRookCapture(m.target,m.captured)
 
         flip(m.captured, m.target)
         flipPiece(originPiece, m.origin, m.target)
