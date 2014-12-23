@@ -1,23 +1,22 @@
 package com.alanjz.meerkat.util.move.order
 
 import com.alanjz.meerkat.moves.Move
-import com.alanjz.meerkat.moves.Move._
-import com.alanjz.meerkat.util.basicEval.BasicEvaluation
 
+@deprecated
 object CaptureValue {
-  def comparator(move : Move) : Double = move match {
+  def comparator(move : Move) : Double = 0.0/*move match { 0.0
     case m : PawnCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.pawnScore
+      -5 - MaterialEvaluation.pieceWeight(m.captured)
     case m : KnightCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.knightScore
+      -3 - MaterialEvaluation.pieceWeight(m.captured)
     case m : BishopCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.bishopScore
+      -3 - MaterialEvaluation.pieceWeight(m.captured)
     case m : RookCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.rookScore
+      -2 - MaterialEvaluation.pieceWeight(m.captured)
     case m : QueenCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.queenScore
+      -1 - MaterialEvaluation.pieceWeight(m.captured)
     case m : KingCapture =>
-      -BasicEvaluation.pieceWeight(m.captured) + BasicEvaluation.kingScore
+      -MaterialEvaluation.pieceWeight(m.captured)
     case _ => 0
-  }
+  }*/
 }

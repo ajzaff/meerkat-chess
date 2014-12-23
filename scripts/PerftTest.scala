@@ -1,88 +1,69 @@
-import com.alanjz.meerkat.moves.Move
-import com.alanjz.meerkat.pieces.Piece._
-import com.alanjz.meerkat.position.BasicNode
-import com.alanjz.meerkat.util.basicMove.MoveGenerator
-import com.alanjz.meerkat.util.parsing.FENParser
+import com.alanjz.meerkat.moves.Move.{PawnPromoteCapture, PawnPromote}
+import com.alanjz.meerkat.moves.{Attacker, Move, PseudoLegalMover}
+import com.alanjz.meerkat.position.mutable.MaskNode
+import com.alanjz.meerkat.util.numerics.BitMask
+import com.alanjz.meerkat.util.position.mutable.FENMaskNodeBuilder
 
+/**
+ * Created by alan on 12/15/14.
+ */
 object PerftTest extends App {
-  def divide(node : BasicNode, depth : Int) : Unit = {
-    var num = 0
+  def divide(node : MaskNode, depth : Int) : Unit = {
+    var nodeCount = 0
+    var moveCount = 0
     if(depth == 0) return
-    val moves = new MoveGenerator(node).generateAll
+    val moves = new PseudoLegalMover(node).getMoves
     for (move <- moves) {
-      val a = perft(node.move(move), depth-1)
+      node.make(move)
+      val a = perft(node, depth-1)
+      node.unmake()
       move match {
-        case m : Move.PawnPromote => println(s"${m.origin}${m.target}${m.promoted.toChar.toUpper} $a")
-        case m : Move.PawnPromoteCapture => println(s"${m.origin}${m.target}${m.promoted.toChar.toUpper} $a")
-        case _ => println(s"${move.origin}${move.target} $a")
+        case PawnPromote(o, t, p) => println(s"$o$t${p.toChar.toUpper} $a")
+        case PawnPromoteCapture(o, t, c, p) => println(s"$o$t${p.toChar.toUpper} $a")
+        case m: Move => println(s"${m.origin}${m.target} $a")
       }
-      num += a
+      nodeCount += a
+      if(a > 0) moveCount += 1
     }
-    println(num)
+    println(s"Nodes: $nodeCount")
+    println(s"Moves: $moveCount")
   }
 
-  def perft(node : BasicNode, depth : Int) : Int = {
+  def perft(node : MaskNode, depth : Int) : Int = {
     var num = 0
-    if(depth == 0) return 1
-    val moves = new MoveGenerator(node).generateAll
+    if(depth == 0) {
+      if(node.isTerminal) return 0
+      else return 1
+    }
+    else if(node.isTerminal) {
+      return 0
+    }
+    val moves = new PseudoLegalMover(node).getMoves
     for (move <- moves) {
-      num += perft(node.move(move), depth-1)
+      node.make(move)
+      num += perft(node, depth-1)
+      node.unmake()
     }
     num
   }
 
+  //FENMaskNodeBuilder.parse("r4r1k/p1pNqpb1/bn2pnp1/3P4/1p2P3/2N2Q1p/PPPBBPPP/R4K1R w - - 0 1")
+  //FENMaskNodeBuilder.parse("r3k2r/p2pqpb1/bn1ppnp1/1B2N3/1p2P3/2N2Q1p/PPPB1PPP/R3K2R b KQkq - 0 1")
+  val node = FENMaskNodeBuilder.parse("rnbqkb1r/pp1p1ppp/2p5/4P3/2B5/8/PPP1NnPP/RNBQK2R w KQkq - 0 6")
+  // MaskNode.initialPosition
 
-  /*val node = {
-    val builder = NodeBuilder.newInstance
-    builder.putPiece(A8, Rook(Black))
-    builder.putPiece(B8, Knight(Black))
-    builder.putPiece(C8, Bishop(Black))
-    builder.putPiece(D8, Queen(Black))
-    builder.putPiece(E8, King(Black))
-    builder.putPiece(F8, Bishop(Black))
-    builder.putPiece(G8, Knight(Black))
-    builder.putPiece(H8, Rook(Black))
-    builder.putPiece(A6, Pawn(Black))
-    builder.putPiece(B7, Pawn(Black))
-    builder.putPiece(C7, Pawn(Black))
-    builder.putPiece(D7, Pawn(Black))
-    builder.putPiece(E7, Pawn(Black))
-    builder.putPiece(F7, Pawn(Black))
-    builder.putPiece(G7, Pawn(Black))
-    builder.putPiece(H7, Pawn(Black))
+  var moves = new PseudoLegalMover(node).getMoves
+  /*node.make(moves.find(_.toString=="Nc6").get)
+  moves = new PseudoLegalMover(node).getMoves
+  node.make(moves.find(_.toString=="hxg2").get)
+  moves = new PseudoLegalMover(node).getMoves
+  node.make(moves.find(_.toString=="Nb8").get)
+  moves = new PseudoLegalMover(node).getMoves*/
 
-    builder.putPiece(A2, Pawn(White))
-    builder.putPiece(B2, Pawn(White))
-    builder.putPiece(C2, Pawn(White))
-    builder.putPiece(D2, Pawn(White))
-    builder.putPiece(E2, Pawn(White))
-    builder.putPiece(F2, Pawn(White))
-    builder.putPiece(G2, Pawn(White))
-    builder.putPiece(H2, Pawn(White))
-    builder.putPiece(A1, Rook(White))
-    builder.putPiece(C3, Knight(White))
-    builder.putPiece(C1, Bishop(White))
-    builder.putPiece(D1, Queen(White))
-    builder.putPiece(E1, King(White))
-    builder.putPiece(F1, Bishop(White))
-    builder.putPiece(G1, Knight(White))
-    builder.putPiece(H1, Rook(White))
-    builder.setActive(White)
-    builder.result()
-  }*/
-
-  val node = FENParser.parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 2")
-
-
-  // FEN: rnbqkbnr/pppppppp/8/8/8/2N5/PPPPPPPP/R1BQKBNR b KQkq - 1 1
-
-  println(node.verboseString)
+  println(node)
+  println(moves.mkString(" "))
 
   val start = System.nanoTime()
-  divide(node, 2)
+  divide(node,4)
   println(s"${(System.nanoTime() - start) / 1e9}s")
-
-  //println(new MoveGenerator(node).generateAll.mkString(" "))
-
-  //println(perft(node, 3))
 }

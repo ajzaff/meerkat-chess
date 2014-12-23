@@ -1,14 +1,14 @@
 package com.alanjz.meerkat.search
 
 import com.alanjz.meerkat.moves.Move
-import com.alanjz.meerkat.position.BasicNode
+import com.alanjz.meerkat.position.mutable.Node
 
 /**
  * The base class of all search algorithms.
  * @tparam N
  */
 
-trait Search[N <: BasicNode] {
+trait Search[N <: Node] {
 
   type BestMove = (Move, Double)
 

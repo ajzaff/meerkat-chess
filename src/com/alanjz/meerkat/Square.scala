@@ -29,7 +29,7 @@ sealed trait Square {
    * @return a string representing this square.
    */
 
-  override def toString = s"${file}${rank}"
+  override def toString = s"$file$rank"
 }
 
 object Square {
@@ -106,6 +106,8 @@ object Square {
     case 62 => G8
     case 63 => H8
   }
+
+  implicit def Int2Square(i : Int) : Square = apply(i)
 
   case object A1 extends Square { val file = File.A; val rank = Rank._1 }
   case object B1 extends Square { val file = File.B; val rank = Rank._1 }
