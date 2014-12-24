@@ -19,7 +19,6 @@ class MCFrame extends Runnable {
   this.add(board)
   this.add(tabs)
   this.setJMenuBar(menuBar)
-  this.setResizable(false)
   this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
   this.pack()
   this.setLocationRelativeTo(null)

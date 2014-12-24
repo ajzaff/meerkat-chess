@@ -39,11 +39,6 @@ class MCBoardPane {
   this.addMouseListener(MCApp.mouse)
   this.addMouseMotionListener(MCApp.mouse)
 
-  // Key shortcuts.
-  this.registerKeyboardAction(MCUndo.action, "Undo", KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), JComponent.WHEN_FOCUSED)
-  this.registerKeyboardAction(MCRedo.action, "Redo", KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), JComponent.WHEN_FOCUSED)
-
-
   private def setRenderingHints(g2d : Graphics2D) : Unit = {
     g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY)
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)

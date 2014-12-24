@@ -86,10 +86,6 @@ class MCMouse extends MouseListener with MouseMotionListener {
 
           // make a move!
           MCApp.make(move.get)
-          move.get match {
-            case _ : Capture => MCSound.playSound("sounds/capture.wav")
-            case _ => MCSound.playSound("sounds/move.wav")
-          }
         }
       }
     }

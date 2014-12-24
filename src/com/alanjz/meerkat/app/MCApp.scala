@@ -1,8 +1,10 @@
 package com.alanjz.meerkat.app
 
 import com.alanjz.meerkat.app.events.MCMouse
+import com.alanjz.meerkat.moves.Move.Capture
 import com.alanjz.meerkat.moves.{PseudoLegalMover, Move}
 import com.alanjz.meerkat.position.mutable.MaskNode
+import com.alanjz.meerkat.variation.mutable.LinearVariation
 
 object MCApp extends App {
   val mouse = new MCMouse
@@ -11,8 +13,8 @@ object MCApp extends App {
   val frame = new MCFrame
   val splash = new MCSplash(frame)
 
-  private var variation : List[Move] = Nil
-  private var variationIndex = 0
+  private val variation = new LinearVariation
+  private var i = 0
 
   private def updateBoard(): Unit = {
     moves = getLegalMoves
@@ -20,33 +22,31 @@ object MCApp extends App {
   }
 
   def make(move : Move) : Unit = {
-    if(variationIndex == 0) {
-      variation +:= move
+    if(i==variation.length) {
+      variation.add(move)
     }
-    else if(move != variation(variationIndex)) {
-      println("abandoning variation")
-      variation = variation.drop(variationIndex)
-      variation +:= move
-      variationIndex = 0
+    else {
+      variation.update(i, move)
     }
+    i += 1
     position.make(move)
     updateBoard()
+    move match {
+      case _ : Capture => MCSound.playSound("sounds/capture.wav")
+      case _ => MCSound.playSound("sounds/move.wav")
+    }
   }
 
   def undo() {
-    if(variationIndex < variation.size) {
-      variationIndex += 1
+    if(i > 0) {
+      i -= 1
       position.unmake()
       updateBoard()
     }
   }
 
-  def redo(): Unit = {
-    if(variationIndex > 0) {
-      variationIndex -= 1
-      make(variation(variationIndex))
-    }
-  }
+  def redo() =
+    if(variation.nonEmpty && i<variation.length) make(variation(i))
 
   def getLegalMoves = new PseudoLegalMover(position).getMoves.filter(m => {
     position.make(m)

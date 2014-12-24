@@ -8,14 +8,15 @@ abstract class MCMenuItem(val name : String,
                           keyCode : Int,
                           modifiers : Int = 0) {
 
-  val menuItem = new JMenuItem(name) {
-    setAccelerator(KeyStroke.getKeyStroke(keyCode, modifiers))
+  val f : (ActionEvent => Unit)
+
+  val act = new AbstractAction {
+    override def actionPerformed(e : ActionEvent) = f(e)
   }
 
-  val act : (ActionEvent => Unit)
-
-  val action = new AbstractAction {
-    override def actionPerformed(e : ActionEvent) = act(e)
+  val menuItem = new JMenuItem(name) {
+    setAccelerator(KeyStroke.getKeyStroke(keyCode, modifiers))
+    addActionListener(act)
   }
 
   def toJMenuItem = menuItem

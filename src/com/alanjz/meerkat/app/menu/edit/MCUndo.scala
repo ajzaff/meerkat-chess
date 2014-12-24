@@ -6,5 +6,5 @@ import com.alanjz.meerkat.app.MCApp
 import com.alanjz.meerkat.app.menu.MCMenuItem
 
 object MCUndo extends MCMenuItem("Undo", KeyEvent.VK_LEFT) {
-  override val act = (_ : ActionEvent) => MCApp.undo()
+  override val f = (_ : ActionEvent) => MCApp.undo()
 }
