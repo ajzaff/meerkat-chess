@@ -1,23 +1,47 @@
 package com.alanjz.meerkat.app
 
+import java.awt.FlowLayout
 import javax.swing.JFrame
 
 /**
  * Created by alan on 12/22/14.
  */
-class MCFrame {
+class MCFrame extends Runnable {
   private val frame = new JFrame("Meerkat chess")
   val board = new MCBoardPane
   val menuBar = new MCMenuBar
+  val tabs = new MCTabbedPane
+  private val th = new Thread(this)
+  private var _running = false
 
   // initialize the frame.
-  frame.add(board)
-  frame.setJMenuBar(menuBar)
-  frame.setResizable(false)
-  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-  frame.setAlwaysOnTop(true)
-  frame.pack()
-  frame.setLocationRelativeTo(null)
+  this.setLayout(new FlowLayout)
+  this.add(board)
+  this.add(tabs)
+  this.setJMenuBar(menuBar)
+  this.setResizable(false)
+  this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+  this.pack()
+  this.setLocationRelativeTo(null)
+
+  def isRunning = _running
+
+  def start() : Unit = {
+    _running = true
+    this.setVisible(true)
+    th.start()
+  }
+
+  def stop() : Unit = _running = false
+
+  override def run() : Unit = {
+    while(isRunning) {
+      this.repaint()
+      Thread.sleep(10)
+    }
+
+    System.exit(0)
+  }
 
   def toJFrame = frame
 }

@@ -2,6 +2,7 @@ package com.alanjz.meerkat.app
 
 import javax.swing.JMenuBar
 
+import com.alanjz.meerkat.app.menu.edit.MCEditMenu
 import com.alanjz.meerkat.app.menu.file.MCFileMenu
 
 class MCMenuBar {
@@ -9,6 +10,7 @@ class MCMenuBar {
 
   // add menus.
   this.add(MCFileMenu)
+  this.add(MCEditMenu)
 
   def toJMenuBar = menuBar
 }

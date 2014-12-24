@@ -5,7 +5,7 @@ import java.io.File
 import javax.imageio.ImageIO
 import javax.swing.JFrame
 
-class MCSplash(mcFrame : MCFrame, secondsTimeout : Int = 5) extends Runnable {
+class MCSplash(mcFrame : MCFrame, secondsTimeout : Int = 3) extends Runnable {
   private val frame = new JFrame("Meerkat chess starting...") {
     override def paint(g : Graphics) = _paint(g)
   }
@@ -35,7 +35,7 @@ class MCSplash(mcFrame : MCFrame, secondsTimeout : Int = 5) extends Runnable {
     }
 
     frame.setVisible(false)
-    mcFrame.setVisible(true)
+    mcFrame.start()
   }
 
   def toJFrame = frame

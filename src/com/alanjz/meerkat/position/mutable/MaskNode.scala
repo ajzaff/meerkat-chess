@@ -13,6 +13,8 @@ import com.alanjz.meerkat.util.numerics.BitMask.BitMask
 import FENBuilder.FEN
 import com.alanjz.meerkat.util.position.mutable.{FENBuilder, NodeStringBuilder, FENMaskNodeBuilder}
 
+import scala.collection.parallel.mutable
+
 class MaskNode extends Node {
 
   var allPieces : BitMask = BitMask.empty
@@ -177,14 +179,20 @@ class MaskNode extends Node {
 
   /**
    * Tries to apply the given move.
+   *
+   * It will overwrite existing variations.
+   *
    * @param move a move.
    * @return a node.
    */
 
   override def make(move: Move) : Unit = {
 
+    // return if no piece at origin.
+    if(at(move.origin.toInt).isEmpty) return
+
     def considerRookCapture(target : Square, captured : Piece): Unit = captured match {
-      case Rook(c) => {
+      case Rook(c) =>
         if(c == White) {
           if(target == Square.A1) {
             castleMask &= ~CastleMask.longWhite
@@ -201,7 +209,6 @@ class MaskNode extends Node {
             castleMask &= ~CastleMask.shortBlack
           }
         }
-      }
       case _ =>
     }
 
@@ -294,10 +301,6 @@ class MaskNode extends Node {
         // Reset the half move counter.
         halfMove = 0
       case m: Move =>
-        if(at(m.origin.toInt).isEmpty) {
-          println(this)
-          throw new IllegalStateException(s"in make move `${m.origin}${m.target}': no piece at origin.")
-        }
         flipPiece(at(m.origin.toInt).get, m.origin, m.target)
         m match {
           case PawnAdvance(o,t) =>
@@ -338,6 +341,7 @@ class MaskNode extends Node {
    */
 
   override def unmake() : Unit = {
+
     if(moveList.isEmpty) return
 
     // Restore the states of the detail variables.
@@ -356,6 +360,9 @@ class MaskNode extends Node {
 
     // Restore the active color.
     active = !active
+
+    // return if no piece is at target.
+    if(at(lastMove.target.toInt).isEmpty) return
 
     lastMove match {
       case PawnPromote(o,t,p) =>
