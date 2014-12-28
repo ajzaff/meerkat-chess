@@ -22,7 +22,7 @@ class LinearVariation extends Variation {
 
   def update(i : Int, move : Move) = if(apply(i) != move) {
     _moves = _moves.drop(length-i)
-    _length -= i+2
+    _length -= length-i
     add(move)
     true
   } else false

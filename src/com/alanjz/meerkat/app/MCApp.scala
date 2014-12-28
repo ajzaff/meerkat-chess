@@ -21,6 +21,11 @@ object MCApp extends App {
     frame.board.updatePieceImageCache()
   }
 
+  private def playSoundFor(move : Move) : Unit = move match {
+    case _ : Capture => MCSound.playSound("sounds/capture.wav")
+    case _ => MCSound.playSound("sounds/move.wav")
+  }
+
   def make(move : Move) : Unit = {
     if(i==variation.length) {
       variation.add(move)
@@ -31,10 +36,7 @@ object MCApp extends App {
     i += 1
     position.make(move)
     updateBoard()
-    move match {
-      case _ : Capture => MCSound.playSound("sounds/capture.wav")
-      case _ => MCSound.playSound("sounds/move.wav")
-    }
+    playSoundFor(move)
   }
 
   def undo() {
@@ -42,6 +44,7 @@ object MCApp extends App {
       i -= 1
       position.unmake()
       updateBoard()
+      playSoundFor(variation(i))
     }
   }
 

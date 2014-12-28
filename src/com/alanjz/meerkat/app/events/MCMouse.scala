@@ -12,13 +12,15 @@ class MCMouse extends MouseListener with MouseMotionListener {
   private var _down = false
   private var _holding = false
   private var _holdingPlace : Square = null
-  private var _selectedPlace : Square = null
 
   def isDown = _down
   def isHolding = _holding
-  def isSelecting = getSelectedPlace != null
   def getHoldingPlace = _holdingPlace
-  def getSelectedPlace = _selectedPlace
+
+  def clearHolding() = {
+    _holding = false
+    _holdingPlace = null
+  }
 
   override def mouseMoved(e: MouseEvent): Unit = {
     mouse.setLocation(e.getPoint)
@@ -44,8 +46,20 @@ class MCMouse extends MouseListener with MouseMotionListener {
   def getHoverSquare : Option[Square] = if(hasHoverSquare) {
     val x = mouse.x - MCBoardPane.borderSize
     val y = mouse.y - MCBoardPane.borderSize
+    val xc = if(MCApp.frame.board.isFlipped) {
+      7-x/MCBoardPane.squareSize
+    }
+    else {
+      x/MCBoardPane.squareSize
+    }
+    val yc = if(MCApp.frame.board.isFlipped) {
+      y/MCBoardPane.squareSize
+    }
+    else {
+      7-y/MCBoardPane.squareSize
+    }
 
-    Some(Square(x/MCBoardPane.squareSize + 8*(7-y/MCBoardPane.squareSize)))
+    Some(Square(xc + 8*yc))
   }
   else None
 
@@ -62,11 +76,6 @@ class MCMouse extends MouseListener with MouseMotionListener {
       if(piece.isDefined && piece.get.color == MCApp.position.active) {
         _holding = true
         _holdingPlace = square.get
-      }
-      else {
-        _selectedPlace =
-          if(_selectedPlace == square.get) null
-          else square.get
       }
     }
   }
@@ -91,7 +100,6 @@ class MCMouse extends MouseListener with MouseMotionListener {
     }
 
     _down = false
-    _holding = false
-    _holdingPlace = null
+    clearHolding()
   }
 }

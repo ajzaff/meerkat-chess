@@ -21,6 +21,8 @@ import com.alanjz.meerkat.util.numerics.BitMask.BitMask
 
 class MCBoardPane {
 
+  private var flipped = false
+
   private val panel = new JPanel {
     override def paint(g : Graphics) = _paint(g)
   }
@@ -38,6 +40,15 @@ class MCBoardPane {
   // events.
   this.addMouseListener(MCApp.mouse)
   this.addMouseMotionListener(MCApp.mouse)
+
+  def isFlipped = flipped
+  def flip() = {
+    flipped = !flipped
+    boardBuffered = false
+
+    MCApp.mouse.clearHolding()
+    updatePieceImageCache()
+  }
 
   private def setRenderingHints(g2d : Graphics2D) : Unit = {
     g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY)
@@ -78,9 +89,9 @@ class MCBoardPane {
 
       // calculate the locations.
       val rX = borderSize/2 - g2d.getFontMetrics.charWidth(rank)/2
-      val rY = borderSize + (7-i)*squareSize + squareSize/2 + g2d.getFontMetrics.getHeight / 2
-      val fX = borderSize + i*squareSize + squareSize/2 - g2d.getFontMetrics.charWidth(file)/2
-      val fY = borderSize + 8*squareSize + borderSize/2 + g2d.getFontMetrics.getDescent / 2
+      val rY = borderSize + (if(isFlipped) i else 7-i)*squareSize + squareSize/2 + g2d.getFontMetrics.getHeight / 2
+      val fX = borderSize + (if(isFlipped) 7-i else i)*squareSize + squareSize/2 - g2d.getFontMetrics.charWidth(file)/2
+      val fY = borderSize + 8*squareSize + g2d.getFontMetrics.getHeight/2
 
       // draw the strings.
       g2d.drawString(file.toString, fX, fY)
@@ -105,34 +116,33 @@ class MCBoardPane {
     val g = boardImage.getGraphics.asInstanceOf[Graphics2D]
 
     setRenderingHints(g)
+    g.setBackground(new Color(0,0,0,0))
+    g.clearRect(0,0,boardImage.getWidth,boardImage.getHeight)
     paintBorder(g)
 
     for(i <- 0 to 7) {
       for(j <- 0 to 7) {
         g.setColor(
-          if (Square(i + 8 * j) == MCApp.mouse.getSelectedPlace) {
-            selectedColor
-          }
-          else if (i % 2 == j % 2) {
+          if ((if(isFlipped) 7-i else i) % 2 == j % 2) {
             darkSquareColor
           } else {
             lightSquareColor
           }
         )
-        g.fillRect(borderSize + i * squareSize, borderSize + (7 - j) * squareSize, squareSize, squareSize)
+        g.fillRect(borderSize + (if(isFlipped) 7-i else i) * squareSize, borderSize +
+          (if(isFlipped) j else 7 - j) * squareSize, squareSize, squareSize)
       }
     }
 
     boardBuffered = true
-    g2d.drawImage(boardImage, 0, 0, null)
+    g2d.drawImage( boardImage, 0, 0, null)
   }
 
-  val pieceImageCache = new BufferedImage(
-    2*borderSize + 8*squareSize, 2*borderSize + 8*squareSize, BufferedImage.TYPE_INT_ARGB
-  )
+  val cachedPieceImage = new BufferedImage(
+    2*borderSize + 8*squareSize, 2*borderSize + 8*squareSize, BufferedImage.TYPE_INT_ARGB)
 
   def updatePieceImageCache(): Unit = {
-    val g2d = pieceImageCache.getGraphics.asInstanceOf[Graphics2D]
+    val g2d = cachedPieceImage.getGraphics.asInstanceOf[Graphics2D]
     setRenderingHints(g2d)
 
     def drawBM(bm : BitMask, image : BufferedImage) : Unit = {
@@ -140,8 +150,8 @@ class MCBoardPane {
       while(mask != BitMask.empty) {
         val lsb = BitMask.bitScanForward(mask)
         if(Square(lsb) != MCApp.mouse.getHoldingPlace) {
-          val x = borderSize + (lsb % 8) * squareSize + squareSize / 2 - pieceSize / 2
-          val y = borderSize + (7 - lsb / 8) * squareSize + squareSize / 2 - pieceSize / 2
+          val x = borderSize + (if(isFlipped) 7-lsb%8 else lsb%8) * squareSize + squareSize / 2 - pieceSize / 2
+          val y = borderSize + (if(isFlipped) lsb/8 else 7-lsb/8) * squareSize + squareSize / 2 - pieceSize / 2
           g2d.drawImage(image, x, y, pieceSize, pieceSize, null)
         }
         mask &= (mask - 1)
@@ -150,7 +160,7 @@ class MCBoardPane {
 
     // clear image rect.
     g2d.setBackground(new Color(0,0,0,0))
-    g2d.clearRect(0, 0, pieceImageCache.getWidth, pieceImageCache.getHeight)
+    g2d.clearRect(0, 0, cachedPieceImage.getWidth, cachedPieceImage.getHeight)
 
     // draw all the pieces.
     val pos = MCApp.position
@@ -173,7 +183,7 @@ class MCBoardPane {
   private def paintPieces(g2d : Graphics2D) : Unit = {
 
     // draw pieces.
-    g2d.drawImage(pieceImageCache, 0, 0, null)
+    g2d.drawImage(cachedPieceImage,  0, 0, null)
 
     if(MCApp.mouse.isHolding) {
       val holdingPlace = MCApp.mouse.getHoldingPlace
@@ -187,13 +197,14 @@ class MCBoardPane {
       val i=holdingPlace.toInt%8
       val j=holdingPlace.toInt/8
       g2d.setColor(
-        if (i % 2 == j % 2) {
+        if ((if(isFlipped) 7-i else i) % 2 == j % 2) {
           darkSquareColor
         } else {
           lightSquareColor
         }
       )
-      g2d.fillRect(borderSize + i * squareSize, borderSize + (7 - j) * squareSize, squareSize, squareSize)
+      g2d.fillRect(borderSize + (if(isFlipped) 7-i else i) * squareSize,
+        borderSize + (if(isFlipped) j else 7-j) * squareSize, squareSize, squareSize)
 
       // draw the piece.
       g2d.drawImage(ImageIO read piecePath(piece.get), x, y, pieceSize, pieceSize, null)
@@ -211,21 +222,21 @@ class MCBoardPane {
       m match {
         case c : Move with Move.Capture =>
           g2d.drawLine(
-            borderSize + (c.target.toInt%8)*squareSize,
-            borderSize + (7-c.target.toInt/8)*squareSize,
-            borderSize + (c.target.toInt%8+1)*squareSize,
-            borderSize + (8-c.target.toInt/8)*squareSize
+            borderSize + (if(isFlipped) 7-c.target.toInt%8 else c.target.toInt%8)*squareSize,
+            borderSize + (if(isFlipped) c.target.toInt/8 else 7-c.target.toInt/8)*squareSize,
+            borderSize + (if(isFlipped) 8-c.target.toInt%8 else c.target.toInt%8+1)*squareSize,
+            borderSize + (if(isFlipped) c.target.toInt/8+1 else 8-c.target.toInt/8)*squareSize
           )
           g2d.drawLine(
-            borderSize + (c.target.toInt%8)*squareSize,
-            borderSize + (8-c.target.toInt/8)*squareSize,
-            borderSize + (c.target.toInt%8+1)*squareSize,
-            borderSize + (7-c.target.toInt/8)*squareSize
+            borderSize + (if(isFlipped) 7-c.target.toInt%8 else c.target.toInt%8)*squareSize,
+            borderSize + (if(isFlipped) c.target.toInt/8+1 else 8-c.target.toInt/8)*squareSize,
+            borderSize + (if(isFlipped) 8-c.target.toInt%8 else c.target.toInt%8+1)*squareSize,
+            borderSize + (if(isFlipped) c.target.toInt/8 else 7-c.target.toInt/8)*squareSize
           )
         case _ =>
           g2d.drawOval(
-            borderSize + (m.target.toInt%8)*squareSize,
-            borderSize + (7-m.target.toInt/8)*squareSize, squareSize, squareSize)
+            borderSize + (if(isFlipped) 7-m.target.toInt%8 else m.target.toInt%8)*squareSize,
+            borderSize + (if(isFlipped) m.target.toInt/8 else 7-m.target.toInt/8)*squareSize, squareSize, squareSize)
       }
     }
   }
@@ -236,9 +247,9 @@ class MCBoardPane {
 object MCBoardPane {
 
   // defaults.
-  val borderSize = 47
-  val squareSize = 72
-  val pieceSize = 58
+  val borderSize = 26
+  val squareSize = 58
+  val pieceSize = 50
   val boardSize = new Dimension(2*borderSize + 8*squareSize, 2*borderSize + 8*squareSize)
   val borderFont = new Font(Font.MONOSPACED, Font.BOLD, 20)
   val borderColor = Color.gray
